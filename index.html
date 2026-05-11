@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>NEON RACER — Arcade</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Orbitron: futuristic display font; Share Tech Mono: techy readout font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════ START SCREEN ═══════════════════ -->
+  <div id="startScreen" class="screen active">
+    <div class="bg-grid"></div>
+    <div class="scanlines"></div>
+
+    <div class="logo-wrap">
+      <div class="logo-sub">HYPER ARCADE PRESENTS</div>
+      <div class="logo">NEON<span>RACER</span></div>
+      <div class="logo-tagline">SURVIVE THE NEON HIGHWAY</div>
+    </div>
+
+    <div class="start-car-preview">
+      <canvas id="previewCanvas" width="80" height="130"></canvas>
+    </div>
+
+    <div class="hiscore-display">
+      <span class="hiscore-label">HIGH SCORE</span>
+      <span id="hiScoreStart">000000</span>
+    </div>
+
+    <div class="start-controls">
+      <button class="btn btn-primary" id="btnStart">
+        <span class="btn-glow"></span>
+        ▶ START RACE
+      </button>
+      <button class="btn btn-secondary" id="btnHowTo">HOW TO PLAY</button>
+    </div>
+
+    <div id="howToPanel" class="howto-panel hidden">
+      <div class="howto-grid">
+        <div class="howto-item"><span class="key">W / ↑</span><span>Accelerate</span></div>
+        <div class="howto-item"><span class="key">S / ↓</span><span>Brake</span></div>
+        <div class="howto-item"><span class="key">A / ←</span><span>Lane Left</span></div>
+        <div class="howto-item"><span class="key">D / →</span><span>Lane Right</span></div>
+        <div class="howto-item"><span class="key">SHIFT</span><span>Nitro Boost</span></div>
+        <div class="howto-item"><span class="key">P / ESC</span><span>Pause</span></div>
+      </div>
+      <div class="howto-mobile-note">📱 On mobile: tap left/right sides to steer, tap center top for Nitro</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ GAME SCREEN ═══════════════════ -->
+  <div id="gameScreen" class="screen">
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-block hud-left">
+        <div class="hud-label">SCORE</div>
+        <div class="hud-value" id="scoreDisplay">000000</div>
+      </div>
+      <div class="hud-block hud-center">
+        <div class="hud-label">LEVEL</div>
+        <div class="hud-value" id="levelDisplay">01</div>
+        <div class="level-bar-wrap"><div class="level-bar" id="levelBar"></div></div>
+      </div>
+      <div class="hud-block hud-right">
+        <div class="hud-label">HI-SCORE</div>
+        <div class="hud-value" id="hiScoreDisplay">000000</div>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Side HUD -->
+    <div class="side-hud">
+      <div class="speed-gauge">
+        <div class="gauge-label">SPEED</div>
+        <div class="gauge-bar-wrap">
+          <div class="gauge-bar" id="speedBar"></div>
+        </div>
+        <div class="gauge-value" id="speedValue">0 <span>km/h</span></div>
+      </div>
+      <div class="nitro-gauge">
+        <div class="gauge-label">NITRO</div>
+        <div class="gauge-bar-wrap">
+          <div class="gauge-bar nitro" id="nitroBar"></div>
+        </div>
+        <div class="nitro-icon" id="nitroIcon">⚡</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="game-controls">
+      <button class="ctrl-btn" id="btnPause" title="Pause (P)">⏸</button>
+      <button class="ctrl-btn" id="btnRestart" title="Restart">↺</button>
+    </div>
+
+    <!-- Mobile touch zones -->
+    <div class="touch-zone" id="touchLeft"></div>
+    <div class="touch-zone" id="touchRight"></div>
+    <div class="touch-zone" id="touchNitro"></div>
+  </div>
+
+  <!-- ═══════════════════ PAUSE SCREEN ═══════════════════ -->
+  <div id="pauseScreen" class="screen overlay">
+    <div class="modal-box">
+      <div class="modal-title">PAUSED</div>
+      <div class="modal-score">SCORE <span id="pauseScore">000000</span></div>
+      <div class="modal-btns">
+        <button class="btn btn-primary" id="btnResume">▶ RESUME</button>
+        <button class="btn btn-secondary" id="btnRestartFromPause">↺ RESTART</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ GAME OVER SCREEN ═══════════════════ -->
+  <div id="gameOverScreen" class="screen overlay">
+    <div class="scanlines"></div>
+    <div class="modal-box game-over-box">
+      <div class="go-flash">GAME OVER</div>
+      <div class="go-stats">
+        <div class="go-stat">
+          <span class="go-stat-label">SCORE</span>
+          <span class="go-stat-value" id="goScore">000000</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-stat-label">BEST</span>
+          <span class="go-stat-value" id="goBest">000000</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-stat-label">LEVEL</span>
+          <span class="go-stat-value" id="goLevel">01</span>
+        </div>
+        <div class="go-stat">
+          <span class="go-stat-label">DISTANCE</span>
+          <span class="go-stat-value" id="goDistance">0 km</span>
+        </div>
+      </div>
+      <div id="newHiScoreBadge" class="new-hiscore hidden">🏆 NEW HIGH SCORE!</div>
+      <div class="modal-btns">
+        <button class="btn btn-primary" id="btnPlayAgain">▶ PLAY AGAIN</button>
+        <button class="btn btn-secondary" id="btnGoHome">⌂ MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
